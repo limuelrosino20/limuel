@@ -1,0 +1,87 @@
+import java.util.Scanner;
+
+public class KamoTea {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        String[] flavorNames = {"", "Rocky Road", "Taro", "Matcha", "Chocolate"};
+        String[] sizeNames = {"", "Solo (Medium)", "Grande (Large)"};
+        int[] sizePrices = {0, 29, 39};
+        String[] sugarLevels = {"", "0%", "25%", "50%", "75%", "100%"};
+        String[] addonNames = {"None", "Pearls", "Pudding", "Cream Base", "Milk"};
+        int[] addonPrices = {0, 15, 20, 30, 30};
+
+        System.out.println("=== KAMO TEA ORDERING SYSTEM ===");
+
+        System.out.print("Enter Customer Name: ");
+        String name = scanner.nextLine();
+
+        System.out.println("\n--- FLAVORS ---");
+        System.out.println("1. Rocky Road");
+        System.out.println("2. Taro");
+        System.out.println("3. Matcha");
+        System.out.println("4. Chocolate");
+        System.out.print("Choose flavor (1-4): ");
+        int flavor = scanner.nextInt();
+
+        System.out.println("\n--- SIZES ---");
+        System.out.println("1. Solo (Medium) (₱29)");
+        System.out.println("2. Grande (Large) (₱39)");
+        System.out.print("Choose size (1-2): ");
+        int size = scanner.nextInt();
+
+        System.out.println("\n--- SUGAR LEVEL ---");
+        System.out.println("1. 0% | 2. 25% | 3. 50% | 4. 75% | 5. 100%");
+        System.out.print("Choose sugar level (1-5): ");
+        int sugar = scanner.nextInt();
+
+        System.out.println("\n--- ADD-ONS ---");
+        System.out.println("0. None (₱0)");
+        System.out.println("1. Pearls (₱15)");
+        System.out.println("2. Pudding (₱20)");
+        System.out.println("3. Cream Base (₱30)");
+        System.out.println("4. Milk (₱30)");
+        System.out.print("Choose add-on (0-4): ");
+        int addon = scanner.nextInt();
+
+        System.out.print("Enter Quantity: ");
+        int quantity = scanner.nextInt();
+
+        printReceipt(name, flavor, size, sugar, addon, quantity,
+                flavorNames, sizeNames, sizePrices, sugarLevels, addonNames, addonPrices);
+
+        scanner.close();
+    }
+
+    public static int calculateUnitPrice(int size, int addon, int[] sizePrices, int[] addonPrices) {
+        return sizePrices[size] + addonPrices[addon];
+    }
+
+    public static int calculateTotalPrice(int unitPrice, int quantity) {
+        return unitPrice * quantity;
+    }
+
+    public static void printReceipt(String customerName, int flavor, int size, int sugar,
+            int addon, int quantity, String[] flavorNames, String[] sizeNames, int[] sizePrices,
+            String[] sugarLevels, String[] addonNames, int[] addonPrices) {
+        int unitPrice = calculateUnitPrice(size, addon, sizePrices, addonPrices);
+        int totalPrice = calculateTotalPrice(unitPrice, quantity);
+
+        System.out.println("\n================================");
+        System.out.println("            KAMO TEA            ");
+        System.out.println("        OFFICIAL RECEIPT        ");
+        System.out.println("================================");
+        System.out.println("Customer Name: " + customerName);
+        System.out.println("Flavor:        " + flavorNames[flavor]);
+        System.out.println("Size:          " + sizeNames[size]);
+        System.out.println("Sugar Level:   " + sugarLevels[sugar]);
+        System.out.println("Add-on:        " + addonNames[addon]);
+        System.out.println("Quantity:      " + quantity);
+        System.out.println("--------------------------------");
+        System.out.println("Unit Price:    ₱" + unitPrice + ".00");
+        System.out.println("Total Amount:  ₱" + totalPrice + ".00");
+        System.out.println("================================");
+        System.out.println("      THANK YOU, COME AGAIN!    ");
+        System.out.println("================================");
+    }
+}
