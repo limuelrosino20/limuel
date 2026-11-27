@@ -1,0 +1,118 @@
+// VARIABLES 
+let studentName = "Meynard";
+let age = 40;
+let section = "BSCS 3A";
+
+// ARRAYS 
+let subjects = ["JavaScript", "HTML", "CSS"];
+let scores = [90, 85, 95];
+let colors = ["Red", "Blue", "Green"];
+
+// OBJECT LITERALS 
+const student = {
+  name: studentName,
+  age: age
+};
+
+const school = {
+  schoolName: "Northwest Samar State University",
+  course: "BSCS"
+};
+
+// CLASS + CONSTRUCTOR + METHODS
+class Person {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  introduce() {
+    console.log("Hello, I am " + this.name);
+  }
+
+  study() {
+    console.log(this.name + " is studying JavaScript.");
+  }
+
+  greet() {
+    console.log("Welcome to JavaScript!");
+  }
+
+  getInfo() {
+    return this.name + " - " + this.age;
+  }
+
+  birthday() {
+    this.age++;
+    console.log(this.name + " is now " + this.age);
+  }
+}
+
+// ENCAPSULATION
+class BankAccount {
+  #balance = 1000;
+
+  deposit(amount) {
+    this.#balance += amount;
+  }
+
+  getBalance() {
+    return this.#balance;
+  }
+}
+
+// ABSTRACTION
+class Animal {
+  speak() {
+    console.log("Animals make sounds.");
+  }
+}
+
+// INHERITANCE + POLYMORPHISM
+class Dog extends Animal {
+  speak() {
+    console.log("Dog says arf!");
+  }
+}
+
+// OBJECTS
+const p1 = new Person("Limuel", 20);
+const p2 = new Person("bodoy", 19);
+const account = new BankAccount();
+const dog = new Dog();
+
+// CONDITIONALS
+if (scores[0] >= 75) console.log("Passed");
+
+if (age >= 18) console.log("Adult");
+else console.log("Minor");
+
+let grade = scores[1] >= 90 ? "Excellent" : "Good";
+console.log(grade);
+
+// LOOPS 
+for (let i = 0; i < subjects.length; i++) {
+  console.log(subjects[i]);
+}
+
+let i = 0;
+while (i < 3) {
+  console.log(colors[i]);
+  i++;
+}
+
+for (let color of colors) {
+  console.log(color);
+}
+
+// METHOD CALLS
+p1.introduce();
+p1.study();
+p1.greet();
+console.log(p1.getInfo());
+p1.birthday();
+
+account.deposit(500);
+console.log("Balance:", account.getBalance());
+
+dog.speak();
