@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class KamoTea {
+public class MilkTea {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -68,7 +68,7 @@ public class KamoTea {
         int totalPrice = calculateTotalPrice(unitPrice, quantity);
 
         System.out.println("\n================================");
-        System.out.println("            KAMO TEA            ");
+        System.out.println("            MILK TEA            ");
         System.out.println("        OFFICIAL RECEIPT        ");
         System.out.println("================================");
         System.out.println("Customer Name: " + customerName);
