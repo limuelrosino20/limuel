@@ -1,0 +1,197 @@
+import tkinter as tk
+from tkinter import messagebox, ttk
+
+
+FLAVORS = ("Rocky Road", "Taro", "Matcha", "Chocolate")
+SIZES = {
+    "Solo (Medium) - ₱29": 29,
+    "Grande (Large) - ₱39": 39,
+}
+SUGAR_LEVELS = ("0%", "25%", "50%", "75%", "100%")
+ADDONS = {
+    "None - ₱0": 0,
+    "Pearls - ₱15": 15,
+    "Pudding - ₱20": 20,
+    "Cream Base - ₱30": 30,
+    "Milk - ₱30": 30,
+}
+
+def calculate_total(size, addon, quantity):
+    unit_price = SIZES[size] + ADDONS[addon]
+    return unit_price, unit_price * quantity
+
+
+def format_receipt(name, flavor, size, sugar, addon, quantity):
+    unit_price, total_price = calculate_total(size, addon, quantity)
+    size_name = size.split(" - ")[0]
+    addon_name = addon.split(" - ")[0]
+
+    return (
+        "================================\n"
+        "            KAMO TEA            \n"
+        "        OFFICIAL RECEIPT        \n"
+        "================================\n"
+        f"Customer Name: {name}\n"
+        f"Flavor:        {flavor}\n"
+        f"Size:          {size_name}\n"
+        f"Sugar Level:   {sugar}\n"
+        f"Add-on:        {addon_name}\n"
+        f"Quantity:      {quantity}\n"
+        "--------------------------------\n"
+        f"Unit Price:    ₱{unit_price}.00\n"
+        f"Total Amount:  ₱{total_price}.00\n"
+        "================================\n"
+        "      THANK YOU, COME AGAIN!    \n"
+        "================================\n"
+    )
+
+
+def build_app(root):
+    style = ttk.Style(root)
+    style.theme_use("clam")
+    style.configure("Title.TLabel", font=("Georgia", 22, "bold"))
+    style.configure("Subtitle.TLabel", font=("Segoe UI", 10))
+    style.configure("Section.TLabel", font=("Segoe UI", 15, "bold"))
+    style.configure("Field.TLabel", font=("Segoe UI", 10, "bold"))
+    style.configure("Total.TLabel", font=("Segoe UI", 13, "bold"))
+    style.configure("TEntry", padding=8)
+    style.configure("TCombobox", padding=7)
+    style.configure("TButton", font=("Segoe UI", 10, "bold"), padding=(14, 10))
+
+    root.title("Kamo Tea | Ordering")
+    root.geometry("920x650")
+    root.minsize(800, 590)
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(1, weight=1)
+
+    header = ttk.Frame(root, padding=(28, 20))
+    header.grid(row=0, column=0, sticky="ew")
+    header.columnconfigure(0, weight=1)
+    ttk.Label(header, text="KAMO TEA", style="Title.TLabel").grid(
+        row=0, column=0, sticky="w")
+    ttk.Label(header, text="Kamo Tea COUNTER", style="Subtitle.TLabel").grid(
+        row=0, column=1, sticky="e")
+
+    content = ttk.Frame(root, padding=22)
+    content.grid(row=1, column=0, sticky="nsew")
+    content.columnconfigure(0, weight=1, uniform="panels")
+    content.columnconfigure(1, weight=1, uniform="panels")
+    content.rowconfigure(0, weight=1)
+
+    form = ttk.Frame(content, padding=20)
+    form.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
+    form.columnconfigure(0, weight=1)
+    receipt_panel = ttk.Frame(content, padding=20)
+    receipt_panel.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
+    receipt_panel.columnconfigure(0, weight=1)
+    receipt_panel.rowconfigure(1, weight=1)
+
+    name_var = tk.StringVar()
+    flavor_var = tk.StringVar(value=FLAVORS[0])
+    size_var = tk.StringVar(value=next(iter(SIZES)))
+    sugar_var = tk.StringVar(value=SUGAR_LEVELS[2])
+    addon_var = tk.StringVar(value=next(iter(ADDONS)))
+    quantity_var = tk.StringVar(value="1")
+    total_var = tk.StringVar()
+
+    def add_field(label, row, variable, values=None):
+        ttk.Label(form, text=label, style="Field.TLabel").grid(
+            row=row, column=0, sticky="w", pady=(0, 5))
+        if values is None:
+            widget = ttk.Entry(form, textvariable=variable)
+        else:
+            widget = ttk.Combobox(form, textvariable=variable, values=values,
+                                  state="readonly")
+        widget.grid(row=row + 1, column=0, sticky="ew", pady=(0, 12))
+        return widget
+
+    add_field("CUSTOMER NAME", 1, name_var)
+    add_field("FLAVOR", 3, flavor_var, FLAVORS)
+    size_widget = add_field("SIZE", 5, size_var, tuple(SIZES))
+    add_field("SUGAR LEVEL", 7, sugar_var, SUGAR_LEVELS)
+    addon_widget = add_field("ADD-ON", 9, addon_var, tuple(ADDONS))
+
+    ttk.Label(form, text="QUANTITY", style="Field.TLabel").grid(
+        row=11, column=0, sticky="w", pady=(0, 5))
+    quantity_widget = ttk.Entry(form, textvariable=quantity_var, width=8)
+    quantity_widget.grid(row=12, column=0, sticky="w", pady=(0, 14))
+
+    ttk.Separator(form).grid(row=13, column=0, sticky="ew", pady=(0, 12))
+    ttk.Label(form, textvariable=total_var, style="Total.TLabel").grid(
+        row=14, column=0, sticky="w", pady=(0, 14))
+
+    def update_total(*_):
+        try:
+            quantity = int(quantity_var.get())
+            if quantity < 1:
+                raise ValueError
+            unit_price, total_price = calculate_total(
+                size_var.get(), addon_var.get(), quantity)
+            total_var.set(f"₱{unit_price}.00 each  /  ₱{total_price}.00 total")
+        except ValueError:
+            total_var.set("Enter a quantity of 1 or more")
+
+    def generate_receipt():
+        name = name_var.get().strip()
+        try:
+            quantity = int(quantity_var.get())
+            if not name:
+                messagebox.showwarning("Customer name needed", "Enter a customer name.")
+                return
+            if quantity < 1:
+                raise ValueError
+        except ValueError:
+            messagebox.showwarning("Invalid quantity", "Enter a quantity of 1 or more.")
+            return
+
+        receipt_text.configure(state="normal")
+        receipt_text.delete("1.0", tk.END)
+        receipt_text.insert("1.0", format_receipt(
+            name, flavor_var.get(), size_var.get(), sugar_var.get(),
+            addon_var.get(), quantity))
+        receipt_text.configure(state="disabled")
+
+    def clear_order():
+        name_var.set("")
+        flavor_var.set(FLAVORS[0])
+        size_var.set(next(iter(SIZES)))
+        sugar_var.set(SUGAR_LEVELS[2])
+        addon_var.set(next(iter(ADDONS)))
+        quantity_var.set("1")
+        receipt_text.configure(state="normal")
+        receipt_text.delete("1.0", tk.END)
+        receipt_text.configure(state="disabled")
+        update_total()
+
+    buttons = ttk.Frame(form)
+    buttons.grid(row=15, column=0, sticky="ew")
+    buttons.columnconfigure(0, weight=1)
+    buttons.columnconfigure(1, weight=1)
+    ttk.Button(buttons, text="Print Receipt",
+               command=generate_receipt).grid(row=0, column=0, sticky="ew", padx=(0, 5))
+    ttk.Button(buttons, text="Clear",
+               command=clear_order).grid(row=0, column=1, sticky="ew", padx=(5, 0))
+
+    ttk.Label(receipt_panel, text="Order receipt", style="Section.TLabel").grid(
+        row=0, column=0, sticky="w", pady=(0, 14))
+    receipt_text = tk.Text(receipt_panel, wrap="word", state="disabled",
+                           font=("Consolas", 10), padx=14, pady=14,
+                           relief="flat", borderwidth=0)
+    receipt_text.grid(row=1, column=0, sticky="nsew")
+
+    for variable in (size_var, addon_var, quantity_var):
+        variable.trace_add("write", update_total)
+    size_widget.bind("<<ComboboxSelected>>", update_total)
+    addon_widget.bind("<<ComboboxSelected>>", update_total)
+    quantity_widget.bind("<KeyRelease>", update_total)
+    update_total()
+
+
+def main():
+    root = tk.Tk()
+    build_app(root)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
