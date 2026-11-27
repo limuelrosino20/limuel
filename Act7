@@ -1,0 +1,163 @@
+import React, { useContext } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
+
+import { CartContext } from '../context/CartContext';
+
+export default function CartScreen() {
+  const {
+    cart,
+    removeFromCart,
+    totalItems,
+    totalPrice,
+    isSaving,
+  } = useContext(CartContext);
+
+  const renderCartItem = ({ item }) => (
+    <View style={styles.cartCard}>
+      <View>
+        <Text style={styles.productName}>
+          {item.name}
+        </Text>
+
+        <Text style={styles.price}>
+          ₱{item.price.toLocaleString('en-PH')}
+        </Text>
+      </View>
+
+      <TouchableOpacity
+        style={styles.removeButton}
+        onPress={() => removeFromCart(item.cartId)}
+      >
+        <Text style={styles.removeText}>Remove</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.heading}>My Shopping Cart</Text>
+
+      {isSaving && (
+        <Text style={styles.loadingText}>
+          Updating cart...
+        </Text>
+      )}
+
+      {cart.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>
+            Your cart is empty.
+          </Text>
+
+          <Text style={styles.subtitle}>
+            Go to the Shop tab to add products.
+          </Text>
+        </View>
+      ) : (
+        <>
+          <FlatList
+            data={cart}
+            renderItem={renderCartItem}
+            keyExtractor={(item) => item.cartId}
+          />
+
+          <View style={styles.summary}>
+            <Text style={styles.summaryText}>
+              Total Items: {totalItems}
+            </Text>
+
+            <Text style={styles.totalPrice}>
+              Total: ₱{totalPrice.toLocaleString('en-PH')}
+            </Text>
+          </View>
+        </>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    padding: 20,
+  },
+  heading: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1E3A8A',
+    marginBottom: 20,
+  },
+  cartCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 18,
+    borderRadius: 12,
+    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    elevation: 3,
+  },
+  productName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#222',
+  },
+  price: {
+    fontSize: 15,
+    color: '#555',
+    marginTop: 5,
+  },
+  removeButton: {
+    backgroundColor: '#DC2626',
+    padding: 10,
+    borderRadius: 7,
+  },
+  removeText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  summary: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 12,
+    marginTop: 15,
+    marginBottom: 10,
+  },
+  summaryText: {
+    fontSize: 17,
+    color: '#444',
+  },
+  totalPrice: {
+    fontSize: 21,
+    fontWeight: 'bold',
+    color: '#2563EB',
+    marginTop: 10,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#555',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#777',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  loadingText: {
+    color: '#2563EB',
+    marginBottom: 10,
+  },
+});
